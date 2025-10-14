@@ -1,4 +1,4 @@
-package com.example.kindergarden.models.exception;
+package com.example.kindergarden.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

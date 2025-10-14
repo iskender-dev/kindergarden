@@ -1,4 +1,4 @@
-package com.example.kindergarden.models.exception;
+package com.example.kindergarden.exception;
 
 public class LogicException extends RuntimeException {
     public LogicException(String message) {

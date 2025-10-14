@@ -1,4 +1,4 @@
-package com.example.kindergarden.models.exception;
+package com.example.kindergarden.exception;
 
 public class ConflictException extends RuntimeException {
     public ConflictException(String message) {
