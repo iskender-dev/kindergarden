@@ -8,17 +8,20 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
-@Repository
 public interface GroupChildrenRepository extends JpaRepository<GroupChildren,Long> {
-    GroupChildren findByChildIdAndDateIsNull(Long childId);
+    GroupChildren findByChildIdAndEndDateIsNull(Long id);
 
-    long countByChildIdAndDateIsNull(Long childId);
+    long countByGroupIdAndEndDateIsNull(Long id);
 
     @Query("SELECT gc FROM GroupChildren gc WHERE gc.child.id = :childId " +
             "AND gc.startDate <= :endDate " +
             "AND (gc.endDate IS NULL OR gc.endDate >= :startDate)")
-    GroupChildren findByChildAndPeriodOVerlap(
-            @Param("ChildId") Long childId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate
-    );
+    GroupChildren findByChildIdAndPeriodOverlap(
+            @Param("childId") Long childId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
+    long countByChildIdAndEndDateIsNull(Long childId, LocalDate endDate);
+
+    long countByChildIdAndEndDateIsNull(Long childId);
 }

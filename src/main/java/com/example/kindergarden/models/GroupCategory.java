@@ -32,6 +32,9 @@ public class GroupCategory {
     @Column(nullable = false)
     private Integer price;
 
+    @Column(nullable = false)
+    boolean active;
+
     @JsonIgnore
     @OneToMany(mappedBy = "groupCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Group> groups;

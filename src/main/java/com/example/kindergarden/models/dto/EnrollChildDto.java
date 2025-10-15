@@ -1,38 +1,31 @@
 package com.example.kindergarden.models.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class EnrollChildDto {
+    @NotBlank(message = "Имя обязательно")
+    String firstName;
 
-    @NotBlank(message = "Поле 'Имя' не должно быть пустым")
-    private String firstName;
+    @NotBlank(message = "Фамилия обязательна")
+    String lastName;
 
-    @NotBlank(message = "Поле 'Фамилия' не должно быть пустым")
-    private String lastName;
+    String patronymic;
 
-    private String middleName;
+    @NotNull(message = "Дата рождения обязательна")
+    LocalDate dateOfBirth;
 
-    @NotNull(message = "Дата рождения обязательна для заполнения")
-    @Past(message = "Дата рождения должна быть в прошлом")
-    private LocalDate birthDate;
+    @NotNull(message = "ID группы обязателен")
+    Long groupId;
 
-    @NotNull(message = "Необходимо указать идентификатор группы")
-    @Positive(message = "ID группы должен быть положительным числом")
-    private Long groupId;
+    Integer price;
 
-    @PositiveOrZero(message = "Цена не может быть отрицательной")
-    private Integer price;
 }
 
