@@ -21,7 +21,10 @@ public interface GroupChildrenRepository extends JpaRepository<GroupChildren,Lon
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    long countByChildIdAndEndDateIsNull(Long childId, LocalDate endDate);
+//    long countByChildIdAndEndDateIsNull(Long childId, LocalDate endDate);
+//
+//    long countByChildIdAndEndDateIsNull(Long childId);
+    boolean existsByChild_FirstNameAndChild_LastNameAndEndDateIsNull(String firstName, String lastName);
 
-    long countByChildIdAndEndDateIsNull(Long childId);
+    boolean existsByGroup_IdAndEndDateIsNull(Long groupId, LocalDate endDate);
 }

@@ -1,8 +1,8 @@
 package com.example.kindergarden.service.impl;
 
 import com.example.kindergarden.exception.ConflictException;
-import com.example.kindergarden.exception.LogicException;
 import com.example.kindergarden.exception.NotFoundException;
+import com.example.kindergarden.mapper.ChildMapper;
 import com.example.kindergarden.models.Child;
 import com.example.kindergarden.models.Group;
 import com.example.kindergarden.models.GroupChildren;
@@ -13,82 +13,84 @@ import com.example.kindergarden.repositories.GroupChildrenRepository;
 import com.example.kindergarden.repositories.GroupRepository;
 import com.example.kindergarden.response.GlobalResponse;
 import com.example.kindergarden.service.GroupChildrenService;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @Service
+@RequiredArgsConstructor
 public class GroupChildrenServiceImpl implements GroupChildrenService {
+
     private final GroupChildrenRepository groupChildrenRepository;
     private final ChildRepository childRepository;
     private final GroupRepository groupRepository;
+    private final ChildMapper mapper;
 
-    public GroupChildrenServiceImpl(GroupChildrenRepository groupChildrenRepository, ChildRepository childRepository, GroupRepository groupRepository) {
-        this.groupRepository = groupRepository;
-        this.childRepository = childRepository;
-        this.groupChildrenRepository = groupChildrenRepository;
-    }
-
-    @Transactional
     @Override
-    public ResponseEntity<GlobalResponse> enrollChild(EnrollChildDto enrollChildDto) {
+    public ResponseEntity<GlobalResponse> enrollChild(EnrollChildDto dto) {
+        Group group = groupRepository.findById(dto.getGroupId())
+                .orElseThrow(() -> new NotFoundException("Группа не найдена"));
 
-        Group group = groupRepository.findById(enrollChildDto.getGroupId()).orElseThrow(() ->
-                new NotFoundException("Не удалось найти группу с id - " + enrollChildDto.getGroupId()));
-
-        if (!group.getGroupCategory().isActive()) {
+        if (!group.getGroupCategory().getActive()) {
             throw new ConflictException("Категория групп не активна");
         }
-        long activeChildrenCount = groupChildrenRepository.countByChildIdAndEndDateIsNull((group.getId());
-        if (activeChildrenCount >= group.getMaxChildrenCount()) {
-            throw new ConflictException("Группа полная");
+
+        long currentChildrenCount = groupChildrenRepository.countByGroupIdAndEndDateIsNull(group.getId());
+        if (currentChildrenCount >= group.getMaxChildrenCount()) {
+            throw new ConflictException("Группа заполнена!");
         }
 
-        Child child = childRepository.findOrCreate(enrollChildDto.getFirstName(),enrollChildDto.getLastName(),
-                enrollChildDto.getPatronymic(),enrollChildDto.getDateOfBirth());
-
-        GroupChildren activeEnrollment = groupChildrenRepository.findByChildIdAndEndDateIsNull(child.getId());
-
-
-        if(activeEnrollment != null){
-            throw new ConflictException("Ребенок уже зачислен в группу: "+ activeEnrollment.getGroup().getName());
+        boolean alreadyEnrolled = groupChildrenRepository.existsByChild_FirstNameAndChild_LastNameAndEndDateIsNull(
+                dto.getFirstName(),
+                dto.getLastName()
+        );
+        if (alreadyEnrolled) {
+            throw new ConflictException("Ребенок уже зачислен в группу: " + group.getName());
         }
-        GroupChildren enrollment = new GroupChildren();
-        enrollment.setChild(child);
-        enrollment.setGroup(group);
-        enrollment.setStartDate(LocalDate.now().minusMonths(1));
-        enrollment.setPrice(enrollChildDto.getPrice() != null? enrollChildDto.getPrice(): group.getPrice());
 
-        GroupChildren savedEnrollment = groupChildrenRepository.save(enrollment);
+        Child child = childRepository.save(mapper.toEntity(dto));
 
-        GlobalResponse response = GlobalResponse.created(savedEnrollment);
+        GroupChildren gc = GroupChildren.builder()
+                .child(child)
+                .group(group)
+                .startDate(LocalDate.now())
+                .price(dto.getPrice() != null ? dto.getPrice() : group.getPrice())
+                .build();
 
-        return ResponseEntity.status(201).body(response);
+        groupChildrenRepository.save(gc);
+
+        EnrollChildDto dtoOut = mapper.toDto(child);
+        dtoOut.setGroupId(group.getId());
+        dtoOut.setPrice(gc.getPrice());
+        return dtoOut;
     }
 
-    @Transactional
     @Override
-    public ResponseEntity<GlobalResponse> withdrawChild(Long id, WithdrawChildDto withdrawChildDto) {
-        GroupChildren enrollment = groupChildrenRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("запись ребенка в группе не найдена"));
+    public EnrollChildDto withdrawChild(Long id, WithdrawChildDto dto) {
+        GroupChildren gc = groupChildrenRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Запись не найдена"));
 
-        if (enrollment.getEndDate() != null)
-            throw new LogicException("Ребенок уже отчислен из группы");
+        if (gc.getEndDate() != null) {
+            throw new ConflictException("Ребенок уже отчислен из группы");
+        }
 
-        LocalDate endDate;
-        if (withdrawChildDto.getEndDate() != null) {
-            endDate = withdrawChildDto.getEndDate();
-        }else
-            endDate = LocalDate.now();
+        LocalDate endDate = dto.getEndDate() != null ? dto.getEndDate() : LocalDate.now();
 
-        if (endDate.isBefore(enrollment.getStartDate()))
-            throw new ConflictException("Дата удаления не  может быть раньше даты зачисления!");
-        enrollment.setEndDate(endDate);
-        GroupChildren updatedEnrollment = groupChildrenRepository.save(enrollment);
+        if (endDate.isBefore(gc.getStartDate())) {
+            throw new ConflictException("Дата удаления не может быть раньше даты зачисления!");
+        }
 
-        GlobalResponse response = GlobalResponse.success(updatedEnrollment);
-        return ResponseEntity.ok(response);
+        gc.setEndDate(endDate);
+        groupChildrenRepository.save(gc);
+
+        EnrollChildDto dtoOut = mapper.toDto(gc.getChild());
+        dtoOut.setGroupId(gc.getGroup().getId());
+        dtoOut.setPrice(gc.getPrice());
+        return dtoOut;
     }
+
+
 }
+

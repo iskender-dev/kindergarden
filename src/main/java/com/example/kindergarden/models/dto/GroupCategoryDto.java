@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupCategoryDto {
-    Long id;
-    String name;
-    boolean active;
-    Integer price;
+    private Long id;
+    private String name;
+    private boolean active;
+    private Integer price;
 }

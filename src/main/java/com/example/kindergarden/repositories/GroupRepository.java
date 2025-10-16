@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.awt.print.Pageable;
 
 @Repository
-public interface GroupRepository extends JpaRepository<Group,Long> {
-    boolean existsByNameIgnoreCase(String name);
-    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
-    Page<Group> findAllByOrderByGroupCategoryName(Pageable pageable);
-    boolean existsByGroupCategory(GroupCategory groupCategory);
+public interface GroupRepository extends JpaRepository<Group, Long> {
+
+    boolean existsByName(String name);
+    boolean existsByGroupCategory_Id(Long groupCategoryId);
+    boolean existsByTeacher_Id(Long teacherId);
+    boolean existsByNanny_Id(Long nannyId);
 }

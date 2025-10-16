@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Repository
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
@@ -16,4 +18,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Integer sumPaymentsByGroupChildrenAndPeriod(
             @Param("groupChildrenId") Long groupChildrenId, @Param("startDate")LocalDate startDate, @Param("endDate")LocalDate endDate);
 
+    List<Payment> findAllByGroupChildren_IdAndPaymentDateBetween(Long groupChildrenId, LocalDate paymentDateAfter, LocalDate paymentDateBefore);
 }
