@@ -68,7 +68,12 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ConflictException("Ребенок не посещал садик в прошлом месяце");
         }
 
-        List<Payment> payments = paymentRepo.findAllByGroupChildren_IdAndPaymentDateBetween((gc.getId(), start, end);
+        List<Payment> payments = paymentRepo.findAllByGroupChildren_IdAndPaymentDateBetween(
+                gc.getId(),
+                start,
+                end
+        );
+
         int totalPaid = payments.stream().mapToInt(Payment::getAmount).sum();
 
         int price = gc.getPrice() != null ? gc.getPrice() : gc.getGroup().getPrice();

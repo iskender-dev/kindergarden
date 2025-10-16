@@ -56,7 +56,7 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.setFirstName(dto.getFirstName());
         teacher.setLastName(dto.getLastName());
         teacher.setPatronymic(dto.getPatronymic());
-        teacher.setDegree(dto.getTeacherDegree());
+        teacher.setTeacherDegree(dto.getTeacherDegree());
         teacher.setActive(dto.getActive());
 
         return mapper.toDto(repository.save(teacher));

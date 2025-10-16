@@ -20,13 +20,15 @@ public class GroupChildrenController {
 
     @PostMapping
     @Operation(summary = "Зачисление ребенка в группу")
-    public ResponseEntity<ResponseEntity<GlobalResponse>> enroll(@RequestBody EnrollChildDto dto) {
-        return ResponseEntity.ok(service.enrollChild(dto));
+    public ResponseEntity<EnrollChildDto> enroll(@RequestBody EnrollChildDto dto) {
+        EnrollChildDto result = service.enrollChild(dto);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}/withdraw")
     @Operation(summary = "Отчисление ребенка из группы")
-    public ResponseEntity<ResponseEntity<GlobalResponse>> withdraw(@PathVariable Long id, @RequestBody WithdrawChildDto dto) {
-        return ResponseEntity.ok(service.withdrawChild(id, dto));
+    public ResponseEntity<EnrollChildDto> withdraw(@PathVariable Long id, @RequestBody WithdrawChildDto dto) {
+        EnrollChildDto result = service.withdrawChild(id, dto);
+        return ResponseEntity.ok(result);
     }
 }

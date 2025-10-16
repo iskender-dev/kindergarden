@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentCreateDto {
-    Long id;
-    Integer amount;
-    LocalDate paymentDate;
-    long groupChildrenId; //Long
+    private Long id;
+    private Integer amount;
+    private LocalDate paymentDate;
+    private long groupChildrenId; //Long
 }

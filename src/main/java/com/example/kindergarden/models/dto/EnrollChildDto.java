@@ -12,20 +12,20 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EnrollChildDto {
     @NotBlank(message = "Имя обязательно")
-    String firstName;
+    private String firstName;
 
     @NotBlank(message = "Фамилия обязательна")
-    String lastName;
+    private String lastName;
 
-    String patronymic;
+    private String patronymic;
 
     @NotNull(message = "Дата рождения обязательна")
-    LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @NotNull(message = "ID группы обязателен")
-    Long groupId;
+    private Long groupId;
 
-    Integer price;
+    private Integer price;
 
 }
 

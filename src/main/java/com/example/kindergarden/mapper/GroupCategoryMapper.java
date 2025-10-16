@@ -3,22 +3,12 @@ import com.example.kindergarden.models.GroupCategory;
 import com.example.kindergarden.models.dto.GroupCategoryCreateDto;
 import com.example.kindergarden.models.dto.GroupCategoryDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface GroupCategoryMapper {
-    GroupCategoryMapper INSTANCE = Mappers.getMapper(GroupCategoryMapper.class);
 
-    GroupCategory groupCategoryCreateDtoToGroupCategory(GroupCategoryCreateDto groupCategoryCreateDto);
-
-    GroupCategoryDto groupCategoryToGroupCategoryDto(GroupCategory groupCategory);
-
-    @Mapping(target = "id", ignore = true)
-    void updateGroupCategoryFromDto(GroupCategoryDto groupCategoryDto,@MappingTarget GroupCategory groupCategory);
-
-    List<GroupCategoryDto> groupCategorysToGroupCategoryDtos(List<GroupCategory> groupCategories);
+    GroupCategory toEntity(GroupCategoryCreateDto dto);
+    GroupCategoryDto toDto(GroupCategory entity);
 }

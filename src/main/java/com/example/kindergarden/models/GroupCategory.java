@@ -2,56 +2,28 @@ package com.example.kindergarden.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "group_category")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@ToString(exclude = "groups")
-@EqualsAndHashCode(of = {"id", "name"})
+@AllArgsConstructor
+@Builder
 public class GroupCategory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false)
-    private Boolean active = true;
+    private Boolean active;
 
     @Column(nullable = false)
     private Integer price;
-
-    @Column(nullable = false)
-    boolean active;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "groupCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Group> groups;
-
-    public GroupCategory(String name, Integer price) {
-        this.name = name;
-        this.price = price;
-        this.active = true;
-    }
-
-    public void addGroup(Group group) {
-        groups.add(group);
-        group.setGroupCategory(this);
-    }
-
-    public void removeGroup(Group group) {
-        groups.remove(group);
-        group.setGroupCategory(null);
-    }
 }
