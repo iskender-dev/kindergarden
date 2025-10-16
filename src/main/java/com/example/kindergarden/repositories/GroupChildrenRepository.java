@@ -27,4 +27,6 @@ public interface GroupChildrenRepository extends JpaRepository<GroupChildren,Lon
     boolean existsByChild_FirstNameAndChild_LastNameAndEndDateIsNull(String firstName, String lastName);
 
     boolean existsByGroup_IdAndEndDateIsNull(Long groupId, LocalDate endDate);
+
+    boolean existsByGroup_IdAndEndDateIsNull(Long id);
 }

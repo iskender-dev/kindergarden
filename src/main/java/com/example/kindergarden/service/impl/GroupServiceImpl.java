@@ -30,7 +30,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto create(GroupCreateDto dto) {
-        if (groupRepository.existsByName((dto.getGroupName())) {
+        if (groupRepository.existsByName((dto.getGroupName()))) {
             throw new ConflictException("Группа с таким названием уже существует");
         }
 
@@ -63,7 +63,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Группа не найдена"));
 
-        if (!group.getName().equals(dto.getGroupName()) && groupRepository.existsByName(dto.getName())) {
+        if (!group.getName().equals(dto.getGroupName()) && groupRepository.existsByName(dto.getGroupName())) {
             throw new ConflictException("Группа с таким названием уже существует");
         }
 
@@ -87,7 +87,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Группа не найдена"));
 
-        if (groupChildrenRepository.existsByGroup_IdAndEndDateIsNull((group.getId())) {
+        if (groupChildrenRepository.existsByGroup_IdAndEndDateIsNull(group.getId())) {
             throw new ConflictException("Нельзя удалить группу, в которой есть дети");
         }
 
