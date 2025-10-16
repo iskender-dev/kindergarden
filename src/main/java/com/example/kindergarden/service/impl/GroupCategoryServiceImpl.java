@@ -28,7 +28,9 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
             throw new ConflictException("Категория с таким названием уже существует");
         }
 
-        GroupCategory saved = repository.save(mapper.toEntity(dto));
+        GroupCategory entity = mapper.toEntity(dto);
+        GroupCategory saved = repository.save(entity);
+
         return mapper.toDto(saved);
     }
 
@@ -42,7 +44,7 @@ public class GroupCategoryServiceImpl implements GroupCategoryService {
         }
 
         existing.setName(dto.getCategoryName());
-        existing.setActive(dto.getIsActive());
+        existing.setActive(dto.getActive());
         existing.setPrice(dto.getPrice());
         return mapper.toDto(repository.save(existing));
     }

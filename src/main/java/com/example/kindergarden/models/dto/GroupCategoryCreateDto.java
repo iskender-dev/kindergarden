@@ -20,7 +20,7 @@ public class GroupCategoryCreateDto {
     private String categoryName;
 
     @NotNull(message = "Необходимо указать, активна ли категория")
-    private Boolean isActive;
+    private Boolean active;
 
     @NotNull(message = "Цена категории обязательна")
     @Positive(message = "Цена должна быть положительной")

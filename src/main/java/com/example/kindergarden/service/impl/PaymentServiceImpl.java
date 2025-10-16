@@ -28,17 +28,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto create(PaymentCreateDto dto) {
-        GroupChildren gc = groupChildrenRepo.findById(dto.getGroupChildrenId())
-                .orElseThrow(() -> new NotFoundException("Ребенок не найден в группе"));
-
-        if (gc.getEndDate() != null) {
-            throw new ConflictException("Ребенок уже отчислен, оплата невозможна");
-        }
+        GroupChildren gc = groupChildrenRepo.findByChild_IdAndEndDateIsNull(dto.getGroupChildrenId())
+                .orElseThrow(() -> new NotFoundException("Ребенок не найден в группе или уже отчислен"));
 
         if (dto.getAmount() == null || dto.getAmount() <= 0) {
             throw new ConflictException("Сумма платежа должна быть положительной");
         }
-
         if (dto.getPaymentDate() == null) {
             throw new ConflictException("Дата платежа обязательна");
         }
@@ -54,17 +49,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PreviousMonthDebtDto getPreviousMonthDebt(Long childId) {
-        GroupChildren gc = groupChildrenRepo.findAll().stream()
-                .filter(g -> g.getChild().getId().equals(childId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Ребенок не найден или не состоит в группе"));
+        GroupChildren gc = groupChildrenRepo.findByChild_IdAndEndDateIsNull(childId)
+                .orElseThrow(() -> new NotFoundException("Ребенок не найден в группе или уже отчислен"));
 
         YearMonth prevMonth = YearMonth.now().minusMonths(1);
         LocalDate start = prevMonth.atDay(1);
         LocalDate end = prevMonth.atEndOfMonth();
 
-        if (gc.getStartDate().isAfter(end) ||
-                (gc.getEndDate() != null && gc.getEndDate().isBefore(start))) {
+        if (gc.getStartDate().isAfter(end)) {
             throw new ConflictException("Ребенок не посещал садик в прошлом месяце");
         }
 
@@ -75,14 +67,12 @@ public class PaymentServiceImpl implements PaymentService {
         );
 
         int totalPaid = payments.stream().mapToInt(Payment::getAmount).sum();
-
         int price = gc.getPrice() != null ? gc.getPrice() : gc.getGroup().getPrice();
 
         PreviousMonthDebtDto result = new PreviousMonthDebtDto();
         result.setId(childId);
         result.setAmountDue(Math.max(price - totalPaid, 0));
+
         return result;
     }
 }
-
-

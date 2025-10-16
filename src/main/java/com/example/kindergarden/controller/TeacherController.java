@@ -5,6 +5,7 @@ import com.example.kindergarden.models.dto.TeacherDto;
 import com.example.kindergarden.service.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,9 @@ public class TeacherController implements CRUDController<TeacherCreateDto, Teach
 
     @Override
     @Operation(summary = "Создаем сущность учитель")
-    public ResponseEntity<TeacherDto> create(@RequestBody TeacherCreateDto dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<TeacherDto> create(@RequestBody @Valid TeacherCreateDto dto) {
+        TeacherDto created = service.create(dto);
+        return ResponseEntity.ok(created);
     }
 
     @Override

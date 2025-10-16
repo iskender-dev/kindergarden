@@ -19,7 +19,7 @@ public class TeacherCreateDto {
     @NotBlank(message = "Заполните поле фамилия обязательно")
     String lastName;
     String patronymic;
-    @NotBlank(message = "Введите роль")
+    @NotNull(message = "Введите роль")
     TeacherDegree teacherDegree;
     @NotNull(message = "Статус обязателен")
     Boolean active;

@@ -5,6 +5,7 @@ import com.example.kindergarden.models.dto.GroupCategoryDto;
 import com.example.kindergarden.service.GroupCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupCategoryController implements CRUDController<GroupCategoryCreateDto, GroupCategoryDto> {
 
     private final GroupCategoryService service;
+    private final GroupCategoryService groupCategoryService;
 
     @Override
     @Operation(summary = "Создание категории групп")
-    public ResponseEntity<GroupCategoryDto> create(@RequestBody GroupCategoryCreateDto dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<GroupCategoryDto> create(@RequestBody @Valid GroupCategoryCreateDto dto) {
+        GroupCategoryDto created = service.create(dto);
+        return ResponseEntity.ok(created);
     }
 
     @Override
