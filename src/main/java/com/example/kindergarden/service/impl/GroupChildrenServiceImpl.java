@@ -28,7 +28,6 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
 
     @Override
     public EnrollChildDto enrollChild(EnrollChildDto dto) {
-        // Получаем группу
         Group group = groupRepository.findById(dto.getGroupId())
                 .orElseThrow(() -> new NotFoundException("Группа не найдена"));
 
@@ -36,13 +35,11 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
             throw new ConflictException("Категория групп не активна");
         }
 
-        // Проверка на заполненность группы
         long currentChildrenCount = groupChildrenRepository.countByGroupIdAndEndDateIsNull(group.getId());
         if (currentChildrenCount >= group.getMaxChildrenCount()) {
             throw new ConflictException("Группа заполнена!");
         }
 
-        // Проверка, что ребенок еще не зачислен
         boolean alreadyEnrolled = groupChildrenRepository.existsByChild_FirstNameAndChild_LastNameAndEndDateIsNull(
                 dto.getFirstName(), dto.getLastName()
         );
@@ -50,10 +47,8 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
             throw new ConflictException("Ребенок уже зачислен в группу: " + group.getName());
         }
 
-        // Сохраняем Child
         Child child = childRepository.save(mapper.toEntity(dto));
 
-        // Создаем GroupChildren
         GroupChildren gc = GroupChildren.builder()
                 .child(child)
                 .group(group)
@@ -63,7 +58,6 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
 
         groupChildrenRepository.save(gc);
 
-        // Преобразуем в DTO через MapStruct
         return mapper.toEnrollDto(gc);
     }
 
@@ -85,7 +79,6 @@ public class GroupChildrenServiceImpl implements GroupChildrenService {
         gc.setEndDate(endDate);
         groupChildrenRepository.save(gc);
 
-        // Преобразуем в DTO через MapStruct
         return mapper.toEnrollDto(gc);
     }
 }
